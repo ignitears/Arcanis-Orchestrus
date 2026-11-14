@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcanis Orchestrus - Card Gallery</title>
+    <!-- Link to the separated CSS file -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for the Proxy Terminal Aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Chakra+Petch:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="top-nav">
+        <h1>ARCANIS ORCHESTRUS</h1>
+        <button id="mode-toggle-btn" onclick="toggleMode()">MODE: SHOW</button>
+    </header>
+
+    <main>
+        <!-- MODE 1: SHOW GALLERY -->
+        <div id="mode-show">
+            <h2>MAJOR ARCANA</h2>
+            <div id="major-gallery" class="gallery">
+                <!-- Major Arcana cards will load here -->
+                <p class="loading-text">Synchronizing with Data Hub...</p>
+            </div>
+
+            <h2>MINOR ARCANA</h2>
+            <div id="minor-gallery" class="gallery">
+                <!-- Minor Arcana cards will load here -->
+            </div>
+        </div>
+
+        <!-- MODE 2: SHUFFLE & PICK -->
+        <div id="mode-shuffle" style="display: none;">
+            <h2>FATE'S DRAW</h2>
+            <div class="shuffle-container">
+                <!-- Changed to spread cards -->
+                <button class="shuffle-btn" onclick="spreadCards()">SPREAD CARDS</button>
+                <div id="drawn-card-container">
+                    <!-- The spread and the drawn card will appear here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Interactive Card Details Modal -->
+    <div id="card-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">×</button>
+            
+            <!-- Left Side: 3D Parallax Card -->
+            <div class="modal-left" id="modal-left">
+                <div class="card-wrapper" id="card-wrapper">
+                    <img id="modal-card-img" src="" alt="Arcana Card">
+                </div>
+            </div>
+            
+            <!-- Right Side: Data & Tabs -->
+            <div class="modal-right">
+                <h2 id="modal-card-name">CARD NAME</h2>
+                
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab(1)">TAB 1</button>
+                    <button class="tab-btn" onclick="switchTab(2)">TAB 2</button>
+                    <button class="tab-btn" onclick="switchTab(3)">TAB 3</button>
+                    <button class="tab-btn" onclick="switchTab(4)">TAB 4</button>
+                </div>
+                
+                <div class="tab-content active" id="tab-1"></div>
+                <div class="tab-content" id="tab-2"></div>
+                <div class="tab-content" id="tab-3"></div>
+                <div class="tab-content" id="tab-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link to the separated JS file -->
+    <script src="script.js"></script>
+</body>
+</html>
