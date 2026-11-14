@@ -82,10 +82,38 @@ function renderGallery() {
     majorGallery.innerHTML = '';
     minorGallery.innerHTML = '';
 
+    // 1. Separate cards and save their original Data Hub index for the modal
+    let majorCards = [];
+    let minorCards = [];
+
     cardsData.forEach((card, index) => {
+        card.originalIndex = index;
+        if (card.arcanaType.toLowerCase().includes('major')) {
+            majorCards.push(card);
+        } else {
+            minorCards.push(card);
+        }
+    });
+
+    // 2. Identify and label the suit of a card
+    const getSuitInfo = (card) => {
+        const text = (card.name + " " + card.arcanaType).toLowerCase();
+        if (text.includes('wand')) return { weight: 1, name: "WANDS" };
+        if (text.includes('cup')) return { weight: 2, name: "CUPS" };
+        if (text.includes('sword')) return { weight: 3, name: "SWORDS" };
+        if (text.includes('pentacle') || text.includes('coin')) return { weight: 4, name: "PENTACLES" };
+        return { weight: 5, name: "OTHER MINOR ARCANA" };
+    };
+
+    // Sort Minor cards by suit so they group together natively
+    minorCards.sort((a, b) => getSuitInfo(a).weight - getSuitInfo(b).weight);
+
+    // 3. Helper to build the visual card HTML (with optional minor shrink)
+    const buildCardHTML = (card, isMinor = false) => {
         const cardEl = document.createElement('div');
-        cardEl.className = 'gallery-card';
-        cardEl.onclick = () => openModal(index);
+        cardEl.className = isMinor ? 'gallery-card minor-card' : 'gallery-card';
+        
+        cardEl.onclick = () => openModal(card.originalIndex); 
 
         if (card.imageUrl) {
             const img = document.createElement('img');
@@ -96,13 +124,43 @@ function renderGallery() {
             cardEl.innerText = card.name;
             cardEl.style.color = 'var(--accent)';
             cardEl.style.fontWeight = 'bold';
+            cardEl.style.textAlign = 'center';
+            cardEl.style.padding = '10px';
         }
+        return cardEl;
+    };
 
-        if (card.arcanaType.toLowerCase().includes('major')) {
-            majorGallery.appendChild(cardEl);
-        } else {
-            minorGallery.appendChild(cardEl);
+    // 4. Render Major Arcana normally (Untouched)
+    majorCards.forEach(card => majorGallery.appendChild(buildCardHTML(card, false)));
+
+    // 5. Render Minor Arcana with Headers and rigid 7-card row breaks
+    let lastSuitWeight = -1;
+    let suitCardCount = 0;
+
+    minorCards.forEach(card => {
+        const suitInfo = getSuitInfo(card);
+        
+        // Insert a Header Text Break when the suit changes
+        if (lastSuitWeight !== suitInfo.weight) {
+            const labelEl = document.createElement('div');
+            labelEl.className = 'suit-label';
+            labelEl.innerText = suitInfo.name;
+            minorGallery.appendChild(labelEl);
+            
+            lastSuitWeight = suitInfo.weight;
+            suitCardCount = 0; // Reset counter for the new suit group
         }
+        
+        // Enforce the "7 per row" layout by inserting an invisible break EVERY 7 cards
+        if (suitCardCount > 0 && suitCardCount % 7 === 0) {
+            const rowBreak = document.createElement('div');
+            rowBreak.style.flexBasis = '100%';
+            rowBreak.style.height = '5px'; 
+            minorGallery.appendChild(rowBreak);
+        }
+        
+        minorGallery.appendChild(buildCardHTML(card, true));
+        suitCardCount++;
     });
 
     if (majorGallery.innerHTML === '') majorGallery.innerHTML = '<p class="loading-text">No Major Arcana Found</p>';
